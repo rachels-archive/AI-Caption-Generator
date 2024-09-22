@@ -3,9 +3,12 @@ import axios from "axios";
 import UploadIcon from "./UploadIcon";
 import { useState } from "react";
 import "../styles.css";
+import { useRouter } from "next/navigation";
 
 export default function UploadForm() {
   const [isUploading, setIsUploading] = useState(false);
+
+  const router = useRouter();
 
   async function upload(e) {
     e.preventDefault();
@@ -18,17 +21,17 @@ export default function UploadForm() {
         file,
       });
       setIsUploading(false);
-      console.log(res.data);
+      const newName = res.data.newName;
+      router.push("./" + newName);
     }
   }
 
   return (
     <>
       {isUploading && (
-        <div className="bg-black/80 text-white fixed inset-0 flex items-center justify-center">
+        <div className="bg-black/90 text-white fixed inset-0 flex items-center justify-center">
           <div>
             <h2 className="text-4xl mb-2 loader"></h2>
-            <h3 className="text-xl">Thank you for your patience &#x1F64F;</h3>
           </div>
         </div>
       )}

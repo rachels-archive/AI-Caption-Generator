@@ -14,12 +14,10 @@ export async function POST(req) {
   const { name, type } = file;
   const data = await file.arrayBuffer();
 
-  /*
   const id = uniqid();
   const ext = name.slice(name.lastIndexOf("."));
   const newName = id + ext;
-  console.log(newName);
-*/
+
   // Create a Deepgram client using the API key
   const deepgram = createClient(process.env.DEEPGRAM_API_KEY);
 
@@ -34,7 +32,7 @@ export async function POST(req) {
     if (error) throw error;
 
     // Return the transcription results
-    return new Response(JSON.stringify(result.results), {
+    return new Response(JSON.stringify({ name, id, ext, newName, results: result.results }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
