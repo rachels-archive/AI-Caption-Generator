@@ -1,17 +1,22 @@
 "use client";
+import axios from "axios";
 import UploadIcon from "./UploadIcon";
+import { useState } from "react";
 
 export default function UploadForm() {
+  const [isUploading, setIsUploading] = useState(false);
+
   async function upload(e) {
     e.preventDefault();
     const files = e.target.files;
 
     if (files.length > 0) {
       const file = files[0];
+      setIsUploading(true);
       const res = await axios.postForm("/api/upload", {
         file,
       });
-
+      setIsUploading(false);
       console.log(res.data);
     }
   }
