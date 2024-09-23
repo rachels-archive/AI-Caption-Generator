@@ -1,5 +1,6 @@
 import uniqid from "uniqid";
 import { createClient } from "@deepgram/sdk";
+import transcriptionResults from "@/app/transcriptionStore";
 
 export async function POST(req) {
   const formData = await req.formData();
@@ -30,6 +31,11 @@ export async function POST(req) {
     });
 
     if (error) throw error;
+    // console.log(result);
+
+    transcriptionResults[newName] = result.results;
+
+    // console.log(`Stored transcription results for ${newName}:`, transcriptionResults);
 
     // Return the transcription results
     return new Response(JSON.stringify({ name, id, ext, newName, results: result.results }), {
