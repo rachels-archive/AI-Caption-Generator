@@ -32,6 +32,12 @@ export async function GET(req) {
     }
   }
 
-  const captions = results.captions.results.channels[0].alternatives[0].words;
-  return Response.json({ captions });
+  // Validate the structure of the results
+  if (results && Array.isArray(results.captions)) {
+    // Return the captions directly
+    return Response.json({ captions: results.captions });
+  } else {
+    console.error("Invalid transcription structure:", JSON.stringify(results, null, 2));
+    return new Response(JSON.stringify({ error: "Invalid transcription data structure." }), { status: 500 });
+  }
 }
