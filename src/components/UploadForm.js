@@ -1,7 +1,7 @@
 "use client";
 import axios from "axios";
 import UploadIcon from "./UploadIcon";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "../styles.css";
 import { useRouter } from "next/navigation";
 
@@ -17,12 +17,38 @@ export default function UploadForm() {
     if (files.length > 0) {
       const file = files[0];
       setIsUploading(true);
-      const res = await axios.postForm("/api/upload", {
-        file,
-      });
-      setIsUploading(false);
-      const newName = res.data.newName;
-      router.push("./" + newName);
+
+      const validTypes = ["video/mp4", "video/ogg", "video/webm"];
+      if (!validTypes.includes(file.type)) {
+        alert("Invalid file type. Please upload a video.");
+        setIsUploading(false);
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const res = await axios.post("/api/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            console.log(`Upload progress: ${percentCompleted}%`);
+          },
+        });
+
+        if (res.status === 200) {
+          router.push("./" + res.data.newName);
+        }
+      } catch (error) {
+        console.error("Upload failed:", error);
+        alert("Upload failed! Please try again.");
+      } finally {
+        setIsUploading(false);
+      }
     }
   }
 
