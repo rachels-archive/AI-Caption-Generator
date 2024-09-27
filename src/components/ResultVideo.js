@@ -100,40 +100,72 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
         </button>
       </div>
       <div>
-        Text color:
-        <input type="color" value={primaryColour} onChange={(e) => setPrimaryColour(e.target.value)} />
-        <br />
-        Outline color:
-        <input type="color" value={outlineColour} onChange={(e) => setOutlineColour(e.target.value)} />
-        <br />
-        Font size:
-        <input
-          type="radio"
-          id="small"
-          name="font_size"
-          value="30"
-          checked={captionSize == 30}
-          onChange={(e) => setCaptionSize(e.target.value)}
-        />
-        <label for="small">Small</label>
-        <input
-          type="radio"
-          id="medium"
-          name="font_size"
-          value="50"
-          checked={captionSize == 50}
-          onChange={(e) => setCaptionSize(e.target.value)}
-        />
-        <label for="medium">Medium</label>
-        <input
-          type="radio"
-          id="large"
-          name="font_size"
-          value="70"
-          checked={captionSize == 70}
-          onChange={(e) => setCaptionSize(e.target.value)}
-        />
-        <label for="large">Large</label>
+        <div className="flex items-center mb-3">
+          <span className="mr-2">Text color:</span>
+          <input
+            className="rounded-md"
+            type="color"
+            value={primaryColour}
+            onChange={(e) => setPrimaryColour(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center mb-3">
+          <span className="mr-2">Outline color:</span>
+          <input
+            className="rounded-md"
+            type="color"
+            value={outlineColour}
+            onChange={(e) => setOutlineColour(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center mb-3">
+          <span className="mr-2">Font size:</span>
+
+          <div className="flex items-center mr-4 sm:mr-0">
+            <input
+              type="radio"
+              id="small"
+              name="font_size"
+              value="30"
+              checked={captionSize == 30}
+              onChange={(e) => setCaptionSize(e.target.value)}
+              className="mr-1" // Small gap between the checkbox and label
+            />
+            <label htmlFor="small" className="mr-1">
+              Small
+            </label>{" "}
+            {/* Reduced margin */}
+          </div>
+
+          <div className="flex items-center mr-4  sm:mr-0">
+            <input
+              type="radio"
+              id="medium"
+              name="font_size"
+              value="50"
+              checked={captionSize == 50}
+              onChange={(e) => setCaptionSize(e.target.value)}
+              className="mr-1" // Small gap between the checkbox and label
+            />
+            <label htmlFor="medium" className="mr-1">
+              Medium
+            </label>{" "}
+            {/* Reduced margin */}
+          </div>
+
+          <div className="flex items-center">
+            <input
+              type="radio"
+              id="large"
+              name="font_size"
+              value="70"
+              checked={captionSize == 70}
+              onChange={(e) => setCaptionSize(e.target.value)}
+              className="mr-1" // Small gap between the checkbox and label
+            />
+            <label htmlFor="large">Large</label>
+          </div>
+        </div>
       </div>
 
       <div className="rounded-xl overflow-hidden relative">
