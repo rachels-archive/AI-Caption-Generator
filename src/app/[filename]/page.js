@@ -1,7 +1,6 @@
 "use client";
 import ResultVideo from "@/components/ResultVideo";
-import SparklesIcon from "@/components/SparklesIcon";
-import TranscriptionItem from "@/components/TranscriptionItem";
+import TranscriptionEditor from "@/components/TranscriptionEditor";
 import axios from "axios";
 import { useState, useEffect } from "react";
 
@@ -28,12 +27,6 @@ export default function FilePage({ params }) {
       });
   }, [fileName]);
 
-  function updateTranscriptionItem(index, prop, event) {
-    const newTranscriptionItem = [...transcriptionItems];
-    newTranscriptionItem[index][prop] = event.target.value;
-    setTranscriptionItems(newTranscriptionItem);
-  }
-
   return (
     <div className="grid grid-cols-2 gap-5">
       {isTranscribing ? (
@@ -45,28 +38,10 @@ export default function FilePage({ params }) {
               <div>
                 <h2 className="text-2xl mb-4">Transcription</h2>
 
-                <div className="grid grid-cols-3 sticky top-0 bg-violet-800 rounded-md p-1">
-                  <div className="font-bold ml-2">From</div>
-                  <div className="font-bold ml-2">To</div>
-                  <div className="font-bold ml-2">Word</div>
-                </div>
-
-                {transcriptionItems.length > 0 &&
-                  transcriptionItems.map((item, key) => (
-                    <TranscriptionItem
-                      key={key}
-                      item={item}
-                      handleStartTimeChange={(e) => {
-                        updateTranscriptionItem(key, "start", e);
-                      }}
-                      handleEndTimeChange={(e) => {
-                        updateTranscriptionItem(key, "end", e);
-                      }}
-                      handleWordChange={(e) => {
-                        updateTranscriptionItem(key, "punctuated_word", e);
-                      }}
-                    />
-                  ))}
+                <TranscriptionEditor
+                  transcriptionItems={transcriptionItems}
+                  setTranscriptionItems={setTranscriptionItems}
+                />
               </div>
             </>
           ) : (
