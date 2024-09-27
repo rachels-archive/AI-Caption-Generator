@@ -51,10 +51,12 @@ export default function FilePage({ params }) {
             <div>No transcription available.</div>
           )}
 
-          <div>
-            <h2 className="text-2xl mb-4">Result</h2>
-            <ResultVideo videoUrl={videoUrl} />
-          </div>
+          {videoUrl && (
+            <div>
+              <h2 className="text-2xl mb-4">Result</h2>
+              <ResultVideo videoUrl={videoUrl} fileName={fileName} transcriptionItems={transcriptionItems} />
+            </div>
+          )}
         </>
       )}
     </div>
