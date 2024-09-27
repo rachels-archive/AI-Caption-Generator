@@ -32,10 +32,17 @@ export async function GET(req) {
     }
   }
 
-  // Validate the structure of the results
-  if (results && Array.isArray(results.captions)) {
-    // Return the captions directly
-    return Response.json({ captions: results.captions });
+  // Ignore metadata from response
+  if (
+    results &&
+    results.results &&
+    Array.isArray(results.results.channels) &&
+    results.results.channels.length > 0 &&
+    Array.isArray(results.results.channels[0].alternatives) &&
+    results.results.channels[0].alternatives.length > 0
+  ) {
+    const words = results.results.channels[0].alternatives[0].words;
+    return Response.json({ captions: words }); // Return only captions
   } else {
     console.error("Invalid transcription structure:", JSON.stringify(results, null, 2));
     return new Response(JSON.stringify({ error: "Invalid transcription data structure." }), { status: 500 });

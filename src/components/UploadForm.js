@@ -2,7 +2,7 @@
 import axios from "axios";
 import UploadIcon from "./UploadIcon";
 import { useState, useRef } from "react";
-import "../styles.css";
+import "../app/globals.css";
 import { useRouter } from "next/navigation";
 
 export default function UploadForm() {
