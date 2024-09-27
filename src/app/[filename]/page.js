@@ -28,6 +28,12 @@ export default function FilePage({ params }) {
       });
   }, [fileName]);
 
+  function updateTranscriptionItem(index, prop, event) {
+    const newTranscriptionItem = [...transcriptionItems];
+    newTranscriptionItem[index][prop] = event.target.value;
+    setTranscriptionItems(newTranscriptionItem);
+  }
+
   return (
     <div className="grid grid-cols-2 gap-5">
       {isTranscribing ? (
@@ -45,9 +51,22 @@ export default function FilePage({ params }) {
                   <div className="font-bold ml-2">Word</div>
                 </div>
 
-                {transcriptionItems.map((item, index) => (
-                  <TranscriptionItem key={index} item={item} />
-                ))}
+                {transcriptionItems.length > 0 &&
+                  transcriptionItems.map((item, key) => (
+                    <TranscriptionItem
+                      key={key}
+                      item={item}
+                      handleStartTimeChange={(e) => {
+                        updateTranscriptionItem(key, "start", e);
+                      }}
+                      handleEndTimeChange={(e) => {
+                        updateTranscriptionItem(key, "end", e);
+                      }}
+                      handleWordChange={(e) => {
+                        updateTranscriptionItem(key, "punctuated_word", e);
+                      }}
+                    />
+                  ))}
               </div>
             </>
           ) : (
