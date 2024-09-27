@@ -12,6 +12,7 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
   const videoRef = useRef(null);
   const [primaryColour, setPrimaryColour] = useState("#FFFFFF");
   const [outlineColour, setOutlineColour] = useState("#000000");
+  const [captionSize, setCaptionSize] = useState(30);
 
   useEffect(() => {
     videoRef.current.src = videoUrl;
@@ -60,7 +61,7 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
       "-preset",
       "ultrafast",
       "-vf",
-      `subtitles=subs.srt:fontsdir=/tmp:force_style='Fontname=Roboto,FontSize=30,MarginV=70,PrimaryColour=${toFFmpegColor(
+      `subtitles=subs.srt:fontsdir=/tmp:force_style='Fontname=Roboto,FontSize=${captionSize},MarginV=70,PrimaryColour=${toFFmpegColor(
         primaryColour
       )},OutlineColour=${toFFmpegColor(outlineColour)}'`,
       "output.mp4",
@@ -88,6 +89,21 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
         <br />
         Outline color:
         <input type="color" value={outlineColour} onChange={(e) => setOutlineColour(e.target.value)} />
+        <br />
+        Font size:
+        <input
+          type="radio"
+          id="small"
+          name="font_size"
+          value="30"
+          onChange={(e) => setCaptionSize(e.target.value)}
+          selected
+        />
+        <label for="small">Small</label>
+        <input type="radio" id="medium" name="font_size" value="50" onChange={(e) => setCaptionSize(e.target.value)} />
+        <label for="medium">Medium</label>
+        <input type="radio" id="large" name="font_size" value="70" onChange={(e) => setCaptionSize(e.target.value)} />
+        <label for="large">Large</label>
       </div>
 
       {videoUrl && (
