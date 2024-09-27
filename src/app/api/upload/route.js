@@ -42,7 +42,7 @@ export async function POST(req) {
 
     const transcriptionData = JSON.stringify({
       video: newName,
-      captions: result,
+      captions: result.results.channels[0].alternatives[0].words,
     });
     transcriptionResults[newName] = result;
     const transcriptionRef = ref(storage, `transcriptions/${newName}.json`);

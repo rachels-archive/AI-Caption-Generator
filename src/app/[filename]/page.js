@@ -11,22 +11,25 @@ export default function FilePage({ params }) {
   const [isTranscribing, setIsTranscribing] = useState(false);
 
   useEffect(() => {
-    setIsTranscribing(true);
-    axios
-      .get("api/transcribe?filename=" + fileName)
-      .then((response) => {
-        setTranscriptionItems(response.data || []);
+    const fetchTranscriptionData = async () => {
+      setIsTranscribing(true);
+      try {
+        const response = await axios.get(`/api/transcribe?filename=${fileName}`);
+        setTranscriptionItems(response.data.captions || []);
+
+        // Construct video URL for Firebase storage
         const videoUrlString = `https://firebasestorage.googleapis.com/v0/b/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}/o/videos%2F${fileName}?alt=media&token=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`;
         setVideoUrl(videoUrlString);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching transcription:", error);
-      })
-      .finally(() => {
+        alert("Failed to load transcription data.");
+      } finally {
         setIsTranscribing(false);
-      });
-  }, [fileName]);
+      }
+    };
 
+    fetchTranscriptionData();
+  }, [fileName]);
   return (
     <div className="grid grid-cols-2 gap-5">
       {isTranscribing ? (

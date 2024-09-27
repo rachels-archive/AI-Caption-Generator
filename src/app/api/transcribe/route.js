@@ -6,33 +6,32 @@ export async function GET(req) {
   const url = new URL(req.url);
   const searchParams = new URLSearchParams(url.searchParams);
   const filename = searchParams.get("filename");
+
   let results = transcriptionResults[filename];
 
-  // if results not found locally
+  // if results is not cached, retrieve it from Firebase Cloud Storage
   if (!results) {
     try {
       const transcriptionRef = ref(storage, `transcriptions/${filename}.json`);
-      const url = await getDownloadURL(transcriptionRef);
+      const downloadUrl = await getDownloadURL(transcriptionRef);
+      console.log("Fetching transcription from URL:", downloadUrl);
 
-      // Fetch the transcription JSON from the URL
-      const response = await fetch(url);
+      const response = await fetch(downloadUrl);
+      console.log("Response status:", response.status);
+
       if (!response.ok) {
-        throw new Error("Failed to fetch transcription from Firebase");
+        throw new Error(`Failed to fetch transcription: ${response.status} ${response.statusText}`);
       }
 
       results = await response.json();
-      // Optionally cache the results locally
-      transcriptionResults[filename] = results;
+      console.log("Fetched transcription results:", JSON.stringify(results, null, 2));
+      transcriptionResults[filename] = results; // Cache locally
     } catch (error) {
       console.error("Error retrieving transcription:", error);
       return new Response(JSON.stringify({ error: "Transcription not found." }), { status: 404 });
     }
   }
 
-  /*
-  if (!results) {
-    return new Response(JSON.stringify({ error: "Transcription not found." }), { status: 404 });
-  }*/
-  const words = results.results.channels[0].alternatives[0].words;
-  return Response.json(words);
+  const captions = results.captions.results.channels[0].alternatives[0].words;
+  return Response.json({ captions });
 }
