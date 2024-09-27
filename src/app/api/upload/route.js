@@ -1,7 +1,8 @@
 import { createClient } from "@deepgram/sdk";
 import { uploadFile } from "@/libs/storage";
 import transcriptionResults from "@/app/transcriptionStore";
-
+import { ref, uploadString } from "firebase/storage";
+import { storage } from "@/config/firebase";
 export async function POST(req) {
   try {
     const formData = await req.formData();
@@ -39,7 +40,13 @@ export async function POST(req) {
       });
     }
 
+    const transcriptionData = JSON.stringify({
+      video: newName,
+      captions: result,
+    });
     transcriptionResults[newName] = result;
+    const transcriptionRef = ref(storage, `transcriptions/${newName}.json`);
+    await uploadString(transcriptionRef, transcriptionData);
 
     return new Response(JSON.stringify({ name, newName, results: result }), {
       status: 200,
