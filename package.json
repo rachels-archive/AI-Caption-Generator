@@ -12,6 +12,8 @@
     "@deepgram/sdk": "^3.7.0",
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
+    "firebase": "^10.13.2",
+    "nanoid": "^5.0.7",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
