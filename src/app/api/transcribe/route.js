@@ -9,10 +9,12 @@ export async function GET(req) {
 
   let results = transcriptionResults[filename];
 
-  // if results is not cached, retrieve it from Firebase Cloud Storage
+  // If results are not cached, retrieve it from Firebase Cloud Storage
   if (!results) {
     try {
       const transcriptionRef = ref(storage, `transcriptions/${filename}.json`);
+      console.log("Transcription reference:", transcriptionRef.fullPath); // Log full path
+
       const downloadUrl = await getDownloadURL(transcriptionRef);
       console.log("Fetching transcription from URL:", downloadUrl);
 
@@ -32,7 +34,7 @@ export async function GET(req) {
     }
   }
 
-  // Ignore metadata from response
+  // Check if the structure is valid for newly uploaded transcriptions
   if (
     results &&
     results.results &&
@@ -41,8 +43,18 @@ export async function GET(req) {
     Array.isArray(results.results.channels[0].alternatives) &&
     results.results.channels[0].alternatives.length > 0
   ) {
+    // First-time upload structure
     const words = results.results.channels[0].alternatives[0].words;
     return Response.json({ captions: words }); // Return only captions
+  }
+  // Check if the structure is valid for reloaded transcriptions
+  else if (
+    results &&
+    Array.isArray(results.captions) && // Check if captions is an array for reloaded data
+    results.captions.length > 0 // Ensure there is at least one caption
+  ) {
+    // Reloaded structure
+    return Response.json({ captions: results.captions }); // Return only captions
   } else {
     console.error("Invalid transcription structure:", JSON.stringify(results, null, 2));
     return new Response(JSON.stringify({ error: "Invalid transcription data structure." }), { status: 500 });
