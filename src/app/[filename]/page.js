@@ -31,7 +31,7 @@ export default function FilePage({ params }) {
     fetchTranscriptionData();
   }, [fileName]);
   return (
-    <div className="grid grid-cols-2 gap-5">
+    <div className="grid sm:grid-cols-2 gap-8 sm:gap-16">
       {isTranscribing ? (
         <span>Transcribing Audio...</span>
       ) : (
