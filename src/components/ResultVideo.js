@@ -10,11 +10,18 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
   const [loaded, setLoaded] = useState(false);
   const ffmpegRef = useRef(new FFmpeg());
   const videoRef = useRef(null);
+  const [primaryColour, setPrimaryColour] = useState("#FFFFFF");
+  const [outlineColour, setOutlineColour] = useState("#000000");
 
   useEffect(() => {
     videoRef.current.src = videoUrl;
     load(); // Load ffmpeg library
   }, [videoUrl]);
+
+  const toFFmpegColor = (rgb) => {
+    const bgr = rgb.slice(5, 7) + rgb.slice(3, 5) + rgb.slice(1, 3);
+    return "&H" + bgr + "&";
+  };
 
   const load = async () => {
     const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
@@ -53,7 +60,9 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
       "-preset",
       "ultrafast",
       "-vf",
-      `subtitles=subs.srt:fontsdir=/tmp:force_style='Fontname=Roboto,FontSize=30,MarginV=70'`,
+      `subtitles=subs.srt:fontsdir=/tmp:force_style='Fontname=Roboto,FontSize=30,MarginV=70,PrimaryColour=${toFFmpegColor(
+        primaryColour
+      )},OutlineColour=${toFFmpegColor(outlineColour)}'`,
       "output.mp4",
     ]);
 
@@ -72,6 +81,13 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
           <SparklesIcon />
           <span>Apply captions</span>
         </button>
+      </div>
+      <div>
+        Text color:
+        <input type="color" value={primaryColour} onChange={(e) => setPrimaryColour(e.target.value)} />
+        <br />
+        Outline color:
+        <input type="color" value={outlineColour} onChange={(e) => setOutlineColour(e.target.value)} />
       </div>
 
       {videoUrl && (
