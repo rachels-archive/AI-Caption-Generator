@@ -13,6 +13,7 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
   const [primaryColour, setPrimaryColour] = useState("#FFFFFF");
   const [outlineColour, setOutlineColour] = useState("#000000");
   const [captionSize, setCaptionSize] = useState(30);
+  const [progress, setProgress] = useState(1);
 
   useEffect(() => {
     videoRef.current.src = videoUrl;
@@ -51,8 +52,22 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
     await ffmpeg.writeFile(fileName, await fetchFile(videoUrl));
     await ffmpeg.writeFile("subs.srt", srt);
 
+    videoRef.current.src = videoUrl;
+    await new Promise((resolve, reject) => {
+      videoRef.current.onloadedmetadata = resolve;
+    });
+    const videoDuration = videoRef.current.duration;
+    //console.log(videoDuration);
     ffmpeg.on("log", ({ message }) => {
-      console.log(message);
+      const regexResult = /time=([0-9:.]+)/.exec(message);
+      if (regexResult && regexResult?.[1]) {
+        const progress = regexResult?.[1];
+        const [hours, minutes, seconds] = progress.split(":");
+        const progressInSeconds = hours * 3600 + minutes * 60 + seconds;
+        const videoProgress = progressInSeconds / videoDuration;
+
+        setProgress(videoProgress);
+      }
     });
 
     await ffmpeg.exec([
@@ -69,6 +84,7 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
 
     const data = await ffmpeg.readFile("output.mp4");
     videoRef.current.src = URL.createObjectURL(new Blob([data.buffer], { type: "video/mp4" }));
+    setProgress(1);
   };
 
   return (
@@ -96,21 +112,44 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
           id="small"
           name="font_size"
           value="30"
+          checked={captionSize == 30}
           onChange={(e) => setCaptionSize(e.target.value)}
-          selected
         />
         <label for="small">Small</label>
-        <input type="radio" id="medium" name="font_size" value="50" onChange={(e) => setCaptionSize(e.target.value)} />
+        <input
+          type="radio"
+          id="medium"
+          name="font_size"
+          value="50"
+          checked={captionSize == 50}
+          onChange={(e) => setCaptionSize(e.target.value)}
+        />
         <label for="medium">Medium</label>
-        <input type="radio" id="large" name="font_size" value="70" onChange={(e) => setCaptionSize(e.target.value)} />
+        <input
+          type="radio"
+          id="large"
+          name="font_size"
+          value="70"
+          checked={captionSize == 70}
+          onChange={(e) => setCaptionSize(e.target.value)}
+        />
         <label for="large">Large</label>
       </div>
 
-      {videoUrl && (
-        <div className="rounded-lg overflow-hidden">
-          <video ref={videoRef} controls></video>
-        </div>
-      )}
+      <div className="rounded-xl overflow-hidden relative">
+        {progress && progress < 1 && (
+          <div className="absolute inset-0 bg-black/80 flex items-center">
+            <div className="w-full text-center">
+              <div className="bg-bg-gradient-from/50 mx-8 rounded-lg overflow-hidden relative">
+                <div className="bg-bg-gradient-from h-8" style={{ width: progress * 100 + "%" }}>
+                  <h3 className="text-white text-xl absolute inset-0 py-1">{parseInt(progress * 100)}%</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {videoUrl && <video ref={videoRef} controls></video>}
+      </div>
     </>
   );
 }
