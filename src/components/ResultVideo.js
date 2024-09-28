@@ -125,12 +125,16 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems, is
       </div>
 
       <div className="mb-4">
+        {!isValid && (
+          <div className="text-yellow-400 text-sm mb-4">* Captions is disabled as some inputs are invalid.</div>
+        )}
         <button
           className="bg-orange-500 py-3 px-6 rounded-full inline-flex gap-2 hover:bg-orange-600 cursor-pointer"
           onClick={transcode}
           disabled={!loaded || !isValid}
         >
           <SparklesIcon />
+
           <span>Apply captions</span>
         </button>
       </div>

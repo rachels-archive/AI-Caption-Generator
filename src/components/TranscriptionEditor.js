@@ -63,9 +63,15 @@ export default function TranscriptionEditor({ transcriptionItems, setTranscripti
                 handleWordChange={(e) => updateTranscriptionItem(key, "punctuated_word", e)}
               />
 
-              {validationErrors[`start-${key}`] && <p className="text-red-500">{validationErrors[`start-${key}`]}</p>}
-              {validationErrors[`end-${key}`] && <p className="text-red-500">{validationErrors[`end-${key}`]}</p>}
-              {validationErrors[`range-${key}`] && <p className="text-red-500">{validationErrors[`range-${key}`]}</p>}
+              {validationErrors[`start-${key}`] && (
+                <p className="text-red-500 text-sm">{validationErrors[`start-${key}`]}</p>
+              )}
+              {validationErrors[`end-${key}`] && (
+                <p className="text-red-500 text-sm">{validationErrors[`end-${key}`]}</p>
+              )}
+              {validationErrors[`range-${key}`] && (
+                <p className="text-red-500 text-sm">{validationErrors[`range-${key}`]}</p>
+              )}
             </div>
           ))}
       </div>
