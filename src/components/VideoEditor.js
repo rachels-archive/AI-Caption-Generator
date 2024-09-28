@@ -16,7 +16,7 @@ export default function VideoEditor({
           <span className="mr-2">Text color:</span>
           <input type="color" value={primaryColour} onChange={(e) => setPrimaryColour(e.target.value)} />
         </div>
-        <div className="flex items-center mb-3">
+        <div className="flex items-center mb-3 ">
           <span className="mr-2">Outline color:</span>
           <input type="color" value={outlineColour} onChange={(e) => setOutlineColour(e.target.value)} />
         </div>

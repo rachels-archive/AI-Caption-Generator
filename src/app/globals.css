@@ -21,3 +21,21 @@
     background-position: left;
   }
 }
+
+input[type="color"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+}
+
+input[type="color"]::-webkit-color-swatch {
+  border-radius: 10px;
+  border: 1px solid #7c7c7c;
+  height: 1em;
+}
+
+input[type="color"]::-moz-color-swatch {
+  border-radius: 10px;
+  border: 1px solid #7c7c7c;
+}
