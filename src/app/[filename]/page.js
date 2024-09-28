@@ -9,6 +9,7 @@ export default function FilePage({ params }) {
   const [transcriptionItems, setTranscriptionItems] = useState([]);
   const [videoUrl, setVideoUrl] = useState("");
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [isValid, setIsValid] = useState(false);
 
   useEffect(() => {
     const fetchTranscriptionData = async () => {
@@ -30,6 +31,11 @@ export default function FilePage({ params }) {
 
     fetchTranscriptionData();
   }, [fileName]);
+
+  const handleValidationChange = (isValid) => {
+    setIsValid(isValid);
+  };
+
   return (
     <div className="grid sm:grid-cols-2 gap-8 sm:gap-16">
       {isTranscribing ? (
@@ -44,6 +50,7 @@ export default function FilePage({ params }) {
                 <TranscriptionEditor
                   transcriptionItems={transcriptionItems}
                   setTranscriptionItems={setTranscriptionItems}
+                  onValidationChange={handleValidationChange}
                 />
               </div>
             </>
@@ -54,7 +61,12 @@ export default function FilePage({ params }) {
           {videoUrl && (
             <div>
               <h2 className="text-2xl mb-4">Result</h2>
-              <ResultVideo videoUrl={videoUrl} fileName={fileName} transcriptionItems={transcriptionItems} />
+              <ResultVideo
+                videoUrl={videoUrl}
+                fileName={fileName}
+                transcriptionItems={transcriptionItems}
+                isValid={isValid}
+              />
             </div>
           )}
         </>

@@ -8,7 +8,7 @@ import robotoBold from "/public/fonts/Roboto-Bold.ttf";
 import DownloadIcon from "./DownloadIcon";
 import VideoEditor from "./VideoEditor";
 
-export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) {
+export default function ResultVideo({ videoUrl, fileName, transcriptionItems, isValid }) {
   const [loaded, setLoaded] = useState(false);
   const ffmpegRef = useRef(new FFmpeg());
   const videoRef = useRef(null);
@@ -103,7 +103,7 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
         <a
           href={downloadUrl}
           download={fileName}
-          className="bg-green-500 my-3 py-3 px-6 rounded-full inline-flex gap-2 hover:bg-green-600 cursor-pointer"
+          className="bg-green-500 mb-3 py-3 px-6 rounded-full inline-flex gap-2 hover:bg-green-600 cursor-pointer"
         >
           Download <DownloadIcon />
         </a>
@@ -128,7 +128,7 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
         <button
           className="bg-orange-500 py-3 px-6 rounded-full inline-flex gap-2 hover:bg-orange-600 cursor-pointer"
           onClick={transcode}
-          disabled={!loaded}
+          disabled={!loaded || !isValid}
         >
           <SparklesIcon />
           <span>Apply captions</span>
