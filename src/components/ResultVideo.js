@@ -6,6 +6,7 @@ import { formatToSrt } from "@/libs/transcriptionHelpers";
 import roboto from "/public/fonts/Roboto-Regular.ttf";
 import robotoBold from "/public/fonts/Roboto-Bold.ttf";
 import DownloadIcon from "./DownloadIcon";
+import VideoEditor from "./VideoEditor";
 
 export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) {
   const [loaded, setLoaded] = useState(false);
@@ -14,7 +15,8 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
   const [primaryColour, setPrimaryColour] = useState("#FFFFFF");
   const [outlineColour, setOutlineColour] = useState("#000000");
   const [captionSize, setCaptionSize] = useState(30);
-  const [progress, setProgress] = useState(1);
+  const [preset, setPreset] = useState("medium");
+  const [progress, setProgress] = useState(0);
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState("");
 
@@ -77,7 +79,7 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
       "-i",
       fileName,
       "-preset",
-      "ultrafast",
+      `${preset}`,
       "-vf",
       `subtitles=subs.srt:fontsdir=/tmp:force_style='Fontname=Roboto,FontSize=${captionSize},MarginV=70,PrimaryColour=${toFFmpegColor(
         primaryColour
@@ -92,91 +94,23 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
     setDownloadUrl(blobUrl);
 
     setIsVideoReady(true);
-    setProgress(1);
+    setProgress(0);
   };
 
   return (
     <>
-      <div className="mb-4">
-        <button
-          className="bg-orange-500 py-3 px-6 rounded-full inline-flex gap-2 hover:bg-orange-600 cursor-pointer"
-          onClick={transcode}
-          disabled={!loaded} // Disable button if not loaded
+      {isVideoReady && (
+        <a
+          href={downloadUrl}
+          download={fileName}
+          className="bg-green-500 my-3 py-3 px-6 rounded-full inline-flex gap-2 hover:bg-green-600 cursor-pointer"
         >
-          <SparklesIcon />
-          <span>Apply captions</span>
-        </button>
-      </div>
-      <div>
-        <div className="flex items-center mb-3">
-          <span className="mr-2">Text color:</span>
-          <input
-            className="rounded-md"
-            type="color"
-            value={primaryColour}
-            onChange={(e) => setPrimaryColour(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center mb-3">
-          <span className="mr-2">Outline color:</span>
-          <input
-            className="rounded-md"
-            type="color"
-            value={outlineColour}
-            onChange={(e) => setOutlineColour(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center mb-3">
-          <span className="mr-2">Font size:</span>
+          Download <DownloadIcon />
+        </a>
+      )}
 
-          <div className="flex items-center mr-4 sm:mr-0">
-            <input
-              type="radio"
-              id="small"
-              name="font_size"
-              value="30"
-              checked={captionSize == 30}
-              onChange={(e) => setCaptionSize(e.target.value)}
-              className="mr-1" // Small gap between the checkbox and label
-            />
-            <label htmlFor="small" className="mr-1">
-              Small
-            </label>{" "}
-            {/* Reduced margin */}
-          </div>
-
-          <div className="flex items-center mr-4  sm:mr-0">
-            <input
-              type="radio"
-              id="medium"
-              name="font_size"
-              value="50"
-              checked={captionSize == 50}
-              onChange={(e) => setCaptionSize(e.target.value)}
-              className="mr-1" // Small gap between the checkbox and label
-            />
-            <label htmlFor="medium" className="mr-1">
-              Medium
-            </label>{" "}
-            {/* Reduced margin */}
-          </div>
-
-          <div className="flex items-center">
-            <input
-              type="radio"
-              id="large"
-              name="font_size"
-              value="70"
-              checked={captionSize == 70}
-              onChange={(e) => setCaptionSize(e.target.value)}
-              className="mr-1" // Small gap between the checkbox and label
-            />
-            <label htmlFor="large">Large</label>
-          </div>
-        </div>
-      </div>
-      <div className="rounded-lg overflow-hidden relative">
-        {progress && progress < 1 && (
+      <div className="rounded-lg overflow-hidden relative mb-4">
+        {progress > 0 && progress < 1 && (
           <div className="absolute inset-0 bg-black/80 flex items-center">
             <div className="w-full text-center">
               <div className="bg-bg-gradient-from/50 mx-8 rounded-lg overflow-hidden relative">
@@ -189,15 +123,28 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
         )}
         {videoUrl && <video ref={videoRef} controls></video>}
       </div>
-      {isVideoReady && (
-        <a
-          href={downloadUrl}
-          download={fileName}
-          className="bg-green-500 my-3 py-3 px-6 rounded-full inline-flex gap-2 hover:bg-green-600 cursor-pointer"
+
+      <div className="mb-4">
+        <button
+          className="bg-orange-500 py-3 px-6 rounded-full inline-flex gap-2 hover:bg-orange-600 cursor-pointer"
+          onClick={transcode}
+          disabled={!loaded}
         >
-          Download <DownloadIcon />
-        </a>
-      )}
+          <SparklesIcon />
+          <span>Apply captions</span>
+        </button>
+      </div>
+
+      <VideoEditor
+        primaryColour={primaryColour}
+        setPrimaryColour={setPrimaryColour}
+        outlineColour={outlineColour}
+        setOutlineColour={setOutlineColour}
+        captionSize={captionSize}
+        setCaptionSize={setCaptionSize}
+        preset={preset}
+        setPreset={setPreset}
+      />
     </>
   );
 }
