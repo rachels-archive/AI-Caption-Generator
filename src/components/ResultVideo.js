@@ -5,6 +5,7 @@ import { fetchFile, toBlobURL } from "@ffmpeg/util";
 import { formatToSrt } from "@/libs/transcriptionHelpers";
 import roboto from "/public/fonts/Roboto-Regular.ttf";
 import robotoBold from "/public/fonts/Roboto-Bold.ttf";
+import DownloadIcon from "./DownloadIcon";
 
 export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) {
   const [loaded, setLoaded] = useState(false);
@@ -14,6 +15,8 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
   const [outlineColour, setOutlineColour] = useState("#000000");
   const [captionSize, setCaptionSize] = useState(30);
   const [progress, setProgress] = useState(1);
+  const [isVideoReady, setIsVideoReady] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState("");
 
   useEffect(() => {
     videoRef.current.src = videoUrl;
@@ -57,7 +60,7 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
       videoRef.current.onloadedmetadata = resolve;
     });
     const videoDuration = videoRef.current.duration;
-    //console.log(videoDuration);
+
     ffmpeg.on("log", ({ message }) => {
       const regexResult = /time=([0-9:.]+)/.exec(message);
       if (regexResult && regexResult?.[1]) {
@@ -83,7 +86,12 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
     ]);
 
     const data = await ffmpeg.readFile("output.mp4");
-    videoRef.current.src = URL.createObjectURL(new Blob([data.buffer], { type: "video/mp4" }));
+
+    const blobUrl = URL.createObjectURL(new Blob([data.buffer], { type: "video/mp4" }));
+    videoRef.current.src = blobUrl;
+    setDownloadUrl(blobUrl);
+
+    setIsVideoReady(true);
     setProgress(1);
   };
 
@@ -167,8 +175,7 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
           </div>
         </div>
       </div>
-
-      <div className="rounded-xl overflow-hidden relative">
+      <div className="rounded-lg overflow-hidden relative">
         {progress && progress < 1 && (
           <div className="absolute inset-0 bg-black/80 flex items-center">
             <div className="w-full text-center">
@@ -182,6 +189,15 @@ export default function ResultVideo({ videoUrl, fileName, transcriptionItems }) 
         )}
         {videoUrl && <video ref={videoRef} controls></video>}
       </div>
+      {isVideoReady && (
+        <a
+          href={downloadUrl}
+          download={fileName}
+          className="bg-green-500 my-3 py-3 px-6 rounded-full inline-flex gap-2 hover:bg-green-600 cursor-pointer"
+        >
+          Download <DownloadIcon />
+        </a>
+      )}
     </>
   );
 }
